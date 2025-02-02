@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    volumes:
+      - /mnt/secondary-cache/appdata/radarr:/config
+      - /mnt/user:/data
+    ports:
+      - 7878:7878
+    environment:
+      - TZ=America/New_York
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

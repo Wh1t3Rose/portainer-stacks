@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  watchlistarr:
+    image: nylonee/watchlistarr:latest
+    container_name: watchlistarr
+    restart: unless-stopped
+    volumes:
+      - /mnt/user/appdata/watchlistarr:/config  # Config and data location
+      - /mnt/user/downloads:/downloads         # Downloads location
+    ports:
+      - 8181:8181  # Expose the web UI on port 8181
+      - 3748:3748  # Dummy Port for Service Monitoring
+    environment:
+      - TZ=America/New_York  # Set your timezone
+      - RADARR_BASE_URL=http://192.168.1.2:7878
+      - RADARR_API_KEY=c1b4e22974964c9cbd100db651b53777
+      - SONARR_BASE_URL=http://192.168.1.2:8989
+      - PLEX_TOKEN= 6i3eQ4-ovfhuX9FGsgg7
+      - SONARR_API_KEY=c6bdc461a76949f1940c714ae54603e2
+      - REFRESH_INTERVAL_SECONDS=60 # The number of seconds to wait between syncing watchlists
+    networks:
+      - proxy  # Assuming you're using the 'proxy' network for communication with other services
+
+networks:
+  proxy:
+    external: true  # Use existing proxy network if already created in your Docker setup
+
