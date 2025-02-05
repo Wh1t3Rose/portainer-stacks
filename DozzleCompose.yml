@@ -1,0 +1,37 @@
+services:
+  # Dozzle - Real-time log viewer
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    networks:
+      - dozzle_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Required to read container logs
+    ports:
+      - 8037:8080  # Web UI port
+    environment:
+      - TZ=America/New_York  # Set your timezone
+      - DOZZLE_LEVEL=info    # Log Level
+      - DOZZLE_TAILSIZE=300  # Log Tailsize
+
+  # Scrutiny - SMART monitoring
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    networks:
+      - dozzle_network
+    volumes:
+      - /run/udev:/run/udev:ro  # Required for accessing SMART data
+      - /mnt/secondary-cache/appdata/scrutiny:/scrutiny/config  # Scrutiny config
+      - /mnt/secondary-cache/appdata/scrutiny/database:/scrutiny/influxdb  # Scrutiny database
+    ports:
+      - 8088:8080  # Web UI port
+    environment:
+      - TZ=America/New_York  # Set your timezone
+      - INFLUXDB_RETENTION=0  # Set InfluxDB retention policy (0 for infinite)
+
+networks:
+  dozzle_network:
+    driver: bridge
