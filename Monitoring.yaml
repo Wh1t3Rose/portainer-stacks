@@ -1,0 +1,46 @@
+services:
+  # Beszel - Self-hosted chat server
+  beszel:
+    image: ghcr.io/beszel/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    volumes:
+      - /mnt/secondary-cache/appdata/beszel:/config
+    ports:
+      - 3180:3333  # Web UI port
+    environment:
+      - TZ=America/New_York
+      - BESZEL_ADMIN_USERNAME=ech0  # Admin username
+      - BESZEL_ADMIN_PASSWORD=beszel-aPAIb5007  # Admin password
+      - BESZEL_DATABASE=/config/beszel.db  # SQLite database path
+
+  # Uptime Kuma - Monitoring tool
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - /mnt/secondary-cache/appdata/uptime-kuma:/app/data
+    ports:
+      - 3181:3001  # Web UI port
+    environment:
+      - TZ=America/New_York
+
+  # ntfy - Push notifications server
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    volumes:
+      - /mnt/secondary-cache/appdata/ntfy:/etc/ntfy
+    ports:
+      - 3182:80  # Web UI and API port
+    environment:
+      - TZ=America/New_York
+      - NTFY_LOG_LEVEL=info  # Set log level
+      - NTFY_BASE_URL=https://ntfy.ecorp.rip  # Replace with your custom URL
+      - NTFY_CACHE=/etc/ntfy/cache
+
+networks:
+  default:
+    driver: bridge
